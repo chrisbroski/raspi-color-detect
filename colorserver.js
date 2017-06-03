@@ -1,8 +1,9 @@
 /*jslint node: true, sloppy: true */
 
-var app = require('express')(),
-    http = require('http').Server(app),
-    io = require('socket.io')(http),
+var http = require('http'),
+    fs = require("fs"),
+    server = http.createServer(app),
+    io = require('socket.io')(server),
     spawn = require('child_process').spawn,
     port = 3790,
     senseState = {},
@@ -241,10 +242,6 @@ function takePic() {
     });
 }
 
-app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/colorview.html');
-});
-
 function sendSenseData() {
     setInterval(function () {
         io.emit('senseState', JSON.stringify(senseState));
@@ -269,6 +266,11 @@ io.on('connection', function (socket) {
     });
 });
 
-http.listen(port, function () {
+function app(req, rsp) {
+    rsp.writeHead(200, {'Content-Type': 'text/html'});
+    fs.createReadStream(__dirname + '/colorview.html').pipe(rsp);
+}
+
+server.listen(port, function () {
     console.log('Color view server listening on http://0.0.0.0/:' + port);
 });
