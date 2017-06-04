@@ -2,9 +2,10 @@
 
 var http = require('http'),
     fs = require("fs"),
-    server = http.createServer(app),
-    io = require('socket.io')(server),
+    socket = require("socket.io"),
     spawn = require('child_process').spawn,
+    server = http.createServer(app),
+    io = new socket(server),
     port = 3790,
     senseState = {},
     imgWidth = 128,
